@@ -1,0 +1,35 @@
+node {
+
+ jdk = tool name: 'JDK 11.0.7'
+ env.JAVA_HOME = "${jdk}"
+
+  stage('SCM Chekout'){
+  git 'https://github.com/Padmapriyak1/SampleWebProject'
+  }
+
+  stage('clean'){
+  //get maven home path 
+  
+  def mvnhome = tool name: 'M3', type: 'maven'
+  bat "${mvnhome}/bin/mvn clean"
+  }
+  
+  stage('war')
+  {
+  def mvnhome = tool name: 'M3', type: 'maven'
+  bat "${mvnhome}/bin/mvn install"
+  }
+  
+  stage('Sonar')
+  {
+  withSonarQubeEnv(credentialsId: 'JenkinsM13SonarToken', installationName: 'M13 SonarQube')
+  {
+    def mvnhome = tool name: 'M3', type: 'maven'
+    bat "${mvnhome}/bin/mvn sonar:sonar"
+  } 
+  }
+  
+ 
+  
+  
+}
